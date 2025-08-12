@@ -94,5 +94,3 @@ This project is for educational and prototyping purposes. For official guidance,
 ## Author
 
 Lokesh Todi
-
-[1] https://github.com/LokeCoder11/Industry_Specialized_GPT_LLM_Bot_Using_Pre-Trained_Models_Deep-Learning_NLP/edit/main/README.md
