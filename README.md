@@ -116,7 +116,7 @@ This project uses a retrieval + generator pipeline to answer domain questions ac
   - gradio
   - datasets
   - requests, beautifulsoup4
-  - accelerate, peft, bitsandbytes (optional for efficient fine-tuning)
+  - accelerate, peft, bitsandbytes (for efficient fine-tuning)
 
 ## RBI FAQ Scraping (Strict Source Use)
 - Input: the single approved RBI FAQ URL provided in this project.
@@ -188,12 +188,12 @@ This project uses a retrieval + generator pipeline to answer domain questions ac
 - Citation: each answer must indicate it is derived from the RBI FAQ context shown in the UI.
 - No personal data processing; all content is public RBI FAQ text.
 
-## Colab Demo Summary
+## Summary
 - Scrape the RBI FAQ from the approved link
 - Build sentence-transformer embeddings and FAISS index
 - Load flan-t5-small as the answer generator
 - Provide a Gradio chat interface with context transparency
-- Optionally run fine-tuning (up to 25 epochs) and evaluate
+- Run fine-tuning (up to 25 epochs) and evaluate
 
 ## Acknowledgements
 
