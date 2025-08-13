@@ -58,6 +58,8 @@ I built an AI chatbot specialized for Banking, focused on India’s Know Your Cu
 - LLMBotProject.ipynb - Colab.html
 - chatbot workflow.jpg
 - WorkingChatbotScreenshot.png
+- faiss_index.index
+- requirements.txt
 - README.md
 
 ## Quality, safety, and ethics
@@ -82,6 +84,116 @@ I built an AI chatbot specialized for Banking, focused on India’s Know Your Cu
 
 1. Open the Colab notebook in GPU mode.
 2. Start the chat interface and test with real‑world KYC questions.
+
+## Retrieval-Augmented Generation (RAG) Overview
+This project uses a retrieval + generator pipeline to answer domain questions accurately and transparently.
+
+- Retriever:
+  - Scrape the RBI FAQ content from the provided RBI FAQ link only.
+  - Create dense embeddings with a sentence-transformer model.
+  - Index embeddings using FAISS for fast similarity search.
+
+- Generator:
+  - Use Hugging Face Transformers flan-t5-small to generate answers grounded in retrieved RBI FAQ passages.
+
+- Flow:
+  1. User question
+  2. Embed with sentence-transformer
+  3. FAISS similarity search over RBI FAQ chunks
+  4. Concatenate top-k contexts
+  5. flan-t5-small generates the final answer conditioned on retrieved context
+
+## Data Source Policy
+- Only use the RBI FAQ content from the single RBI FAQ link specified in this repository/documentation.
+- Do not use external sources for retrieval or training beyond the approved RBI FAQ link.
+
+## Environment and Dependencies
+- Python 3.9 or later recommended
+- Core libraries:
+  - transformers
+  - sentence-transformers
+  - faiss-cpu
+  - gradio
+  - datasets
+  - requests, beautifulsoup4
+  - accelerate, peft, bitsandbytes (optional for efficient fine-tuning)
+
+## RBI FAQ Scraping (Strict Source Use)
+- Input: the single approved RBI FAQ URL provided in this project.
+- Expected output: cleaned question-answer pairs (Q/A) normalized for whitespace and boilerplate removal, stored with fields: id, question, answer, url.
+- Note: Adjust parsing selectors to match the exact RBI FAQ page structure.
+
+## Embedding and Indexing
+- Embedding model: sentence-transformers (e.g., all-MiniLM-L6-v2 or similar compact model).
+- Chunking: split RBI FAQ answers into manageable chunks (e.g., 200–500 tokens with overlap) and store metadata (faq_id, question, url).
+- Index: build a FAISS index (e.g., inner product or HNSW) for similarity search.
+- Persistence: save the FAISS index and metadata for reproducible retrieval.
+
+## Answer Generator
+- Model: google/flan-t5-small (Hugging Face Transformers).
+- Prompting guidelines:
+  - Use only the provided RBI FAQ context.
+  - Cite RBI FAQ and avoid speculation.
+  - Keep answers concise and factual.
+- Decoding: beam search or nucleus sampling with a conservative max token budget.
+
+## Gradio Web UI in Colab
+- An interactive Gradio chat UI embedded in Google Colab is provided for demos.
+- Features:
+  - Input box for user questions
+  - Display of top-k retrieved snippets for transparency
+  - Generated answer with clear source attribution
+  - Optional toggle to show the model prompt
+- Launch with public share enabled for easy review and testing.
+
+## Example Interaction
+- Ask: “What is X according to the RBI FAQ?”
+- Pipeline:
+  1. Embed the question
+  2. Retrieve top-3 context chunks from FAISS
+  3. Format the prompt with retrieved context
+  4. Generate answer with flan-t5-small
+  5. Present answer and sources in the UI
+
+## Fine-Tuning
+- Objective: optionally fine-tune flan-t5-small on RBI FAQ Q/A pairs to improve domain tone and format while staying grounded in context.
+- Data format:
+  - Input: “Context: \nQuestion: \nAnswer:”
+  - Target: the official RBI answer text (lightly cleaned if necessary)
+- Training:
+  - Epochs: up to 25
+  - Learning rate: 5e-5 to 1e-4
+  - Batch size: fit to GPU memory; use gradient accumulation as needed
+  - Early stopping on evaluation loss to reduce overfitting
+  - Optional PEFT/LoRA for parameter-efficient fine-tuning
+- Important: keep retrieval enabled even after fine-tuning to ensure answers remain grounded.
+
+## Evaluation
+- Intrinsic:
+  - Retrieval quality: recall@k on held-out questions
+  - Generation quality: exact match or ROUGE-L against official RBI answers
+- Extrinsic:
+  - Human review to confirm that responses are strictly supported by the retrieved RBI FAQ context
+
+## Reproducibility
+- Fix random seeds across embedding, indexing, and generation.
+- Persist artifacts:
+  - Scraped RBI FAQ dataset (JSONL)
+  - Embedding model name and version
+  - FAISS index and metadata
+  - flan-t5-small revision or fine-tuned checkpoint tag
+
+## Security and Compliance
+- Source restriction: only the provided RBI FAQ link is permitted for scraping, retrieval, and (optional) fine-tuning.
+- Citation: each answer must indicate it is derived from the RBI FAQ context shown in the UI.
+- No personal data processing; all content is public RBI FAQ text.
+
+## Colab Demo Summary
+- Scrape the RBI FAQ from the approved link
+- Build sentence-transformer embeddings and FAISS index
+- Load flan-t5-small as the answer generator
+- Provide a Gradio chat interface with context transparency
+- Optionally run fine-tuning (up to 25 epochs) and evaluate
 
 ## Acknowledgements
 
