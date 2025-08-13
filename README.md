@@ -53,9 +53,10 @@ I built an AI chatbot specialized for Banking, focused on India’s Know Your Cu
 ## What’s included in this repo
 
 - LLMBotProject.ipynb
+- LLMBotProject.ipynb - Colab.html
+- LLMBotProject.ipynb - Colab_files(Folder)
 - Project Summary.doc
 - FAQs on Master Direction on KYC.pdf
-- LLMBotProject.ipynb - Colab.html
 - chatbot workflow.jpg
 - WorkingChatbotScreenshot.png
 - faiss_index.index
